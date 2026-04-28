@@ -205,6 +205,149 @@ export function getStrategicRecommendations() {
   });
 }
 
+export function getMaintenanceAnalysis() {
+  const { accessPoints, hourlyMetrics, networkEvents } = getData();
+
+  // --- Métricas por AP desde hourlyMetrics ---
+  const metricsByAP = {};
+  hourlyMetrics.forEach((row) => {
+    const ap = row.ap_name;
+    if (!metricsByAP[ap]) metricsByAP[ap] = { discRates: [], hours: 0 };
+    metricsByAP[ap].discRates.push(toFloat(row.disconnection_rate));
+    metricsByAP[ap].hours += 1;
+  });
+
+  // --- Errores de cliente por AP desde networkEvents ---
+  const clientErrorsByAP = {};
+  networkEvents.forEach((row) => {
+    const detail = String(row.event_detail || '').toLowerCase();
+    const type = String(row.event_type || '').toLowerCase();
+    if (detail.includes('not responding') || type.includes('deauth')) {
+      clientErrorsByAP[row.ap_name] = (clientErrorsByAP[row.ap_name] || 0) + 1;
+    }
+  });
+
+  // --- Análisis de outages desde connectivity_history ---
+  function countOutages(history) {
+    const parts = String(history || '').split(',');
+    return parts.filter((p) => p.trim() === '0').length;
+  }
+
+  // --- Clasificación por AP ---
+  const results = accessPoints.map((ap) => {
+    const status = String(ap.status || '').toLowerCase();
+    const outages = countOutages(ap.connectivity_history);
+    const metrics = metricsByAP[ap.ap_name] || { discRates: [0], hours: 1 };
+    const avgDiscRate =
+      metrics.discRates.reduce((s, v) => s + v, 0) / Math.max(metrics.discRates.length, 1);
+    const clientErrors = clientErrorsByAP[ap.ap_name] || 0;
+    const errorDensity = clientErrors / Math.max(metrics.hours, 1);
+
+    // Mantenimiento CORRECTIVO directo (AP caído)
+    if (status === 'offline') {
+      return {
+        ap_name: ap.ap_name,
+        status: ap.status,
+        maintenance_type: 'CORRECTIVO',
+        urgency: 'CRITICA',
+        score: 10,
+        outages,
+        avg_disc_rate: Math.round(avgDiscRate * 100) / 100,
+        client_errors: clientErrors,
+        error_density: Math.round(errorDensity * 100) / 100,
+        reason: 'AP completamente fuera de línea. Requiere intervención inmediata.',
+        actions: [
+          'Verificar alimentación eléctrica y cableado físico',
+          'Revisar enlace de red y switch de distribución',
+          'Reemplazar equipo si falla persiste tras reinicio',
+        ],
+      };
+    }
+
+    // Score de riesgo
+    let score = 0;
+    const factors = [];
+
+    // Penalización por estado dormant
+    if (status === 'dormant') {
+      score += 2;
+      factors.push('Estado dormant (+2)');
+    }
+
+    // Outages del AP
+    if (outages >= 25) { score += 4; factors.push(`Caídas del AP: ${outages} (+4)`); }
+    else if (outages >= 15) { score += 3; factors.push(`Caídas del AP: ${outages} (+3)`); }
+    else if (outages >= 10) { score += 2; factors.push(`Caídas del AP: ${outages} (+2)`); }
+    else if (outages >= 5) { score += 1; factors.push(`Caídas del AP: ${outages} (+1)`); }
+
+    // Tasa promedio de desconexión de clientes
+    if (avgDiscRate >= 1.4) { score += 4; factors.push(`Tasa desconexión: ${avgDiscRate.toFixed(2)} (+4)`); }
+    else if (avgDiscRate >= 1.2) { score += 3; factors.push(`Tasa desconexión: ${avgDiscRate.toFixed(2)} (+3)`); }
+    else if (avgDiscRate >= 1.0) { score += 1; factors.push(`Tasa desconexión: ${avgDiscRate.toFixed(2)} (+1)`); }
+
+    // Densidad de errores de cliente
+    if (errorDensity >= 0.5) { score += 2; factors.push(`Densidad errores: ${errorDensity.toFixed(2)}/h (+2)`); }
+    else if (errorDensity >= 0.2) { score += 1; factors.push(`Densidad errores: ${errorDensity.toFixed(2)}/h (+1)`); }
+
+    // Clasificación final
+    let maintenanceType, urgency, reason, actions;
+
+    if (score >= 7) {
+      maintenanceType = 'PREDICTIVO';
+      urgency = 'ALTA';
+      reason = 'Métricas de riesgo críticas. Alta probabilidad de falla próxima.';
+      actions = [
+        'Programar inspección de campo esta semana',
+        'Revisar logs de firmware y temperatura del equipo',
+        'Evaluar sustitución preventiva del hardware',
+        'Verificar calidad del enlace de backhaul',
+      ];
+    } else if (score >= 3) {
+      maintenanceType = 'PREVENTIVO';
+      urgency = 'MEDIA';
+      reason = 'Indicadores de desgaste moderado. Intervención planificada recomendada.';
+      actions = [
+        'Incluir en ronda de mantenimiento mensual',
+        'Revisar configuración de canal y potencia RF',
+        'Limpiar y verificar conexiones físicas',
+        'Actualizar firmware si hay versión disponible',
+      ];
+    } else {
+      maintenanceType = 'NORMAL';
+      urgency = 'BAJA';
+      reason = 'Operación estable. Sin indicadores de riesgo significativos.';
+      actions = ['Continuar monitoreo rutinario', 'Incluir en revisión trimestral'];
+    }
+
+    return {
+      ap_name: ap.ap_name,
+      status: ap.status,
+      maintenance_type: maintenanceType,
+      urgency,
+      score,
+      outages,
+      avg_disc_rate: Math.round(avgDiscRate * 100) / 100,
+      client_errors: clientErrors,
+      error_density: Math.round(errorDensity * 100) / 100,
+      reason,
+      actions,
+      risk_factors: factors,
+    };
+  });
+
+  // Resumen por tipo
+  const summary = { CORRECTIVO: 0, PREDICTIVO: 0, PREVENTIVO: 0, NORMAL: 0 };
+  results.forEach((r) => { summary[r.maintenance_type] = (summary[r.maintenance_type] || 0) + 1; });
+
+  const priorityOrder = { CORRECTIVO: 0, PREDICTIVO: 1, PREVENTIVO: 2, NORMAL: 3 };
+  results.sort((a, b) => {
+    const pd = priorityOrder[a.maintenance_type] - priorityOrder[b.maintenance_type];
+    return pd !== 0 ? pd : b.score - a.score;
+  });
+
+  return { aps: results, summary };
+}
+
 export function getDashboardStats() {
   const { accessPoints, clients, networkEvents, hourlyMetrics } = getData();
   return {

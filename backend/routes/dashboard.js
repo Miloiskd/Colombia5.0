@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getDashboardStats, generateWorkOrders } from '../services/analyzer.js';
+import { getDashboardStats, generateWorkOrders, getMaintenanceAnalysis } from '../services/analyzer.js';
 import { generateStrategicReport } from '../agents/estrategico.js';
 import { askConversationalAgent } from '../agents/conversacional.js';
 
@@ -15,6 +15,14 @@ router.get('/stats', (req, res) => {
 
 router.get('/work-orders', (req, res) => {
   res.json(generateWorkOrders());
+});
+
+router.get('/maintenance', (req, res) => {
+  try {
+    res.json(getMaintenanceAnalysis());
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 router.get('/strategic-report', async (req, res) => {

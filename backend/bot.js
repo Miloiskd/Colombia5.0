@@ -72,7 +72,7 @@ bot.command('ordenes', (ctx) => {
   const msg = orders
     .map(
       (o, i) =>
-        `*${i + 1}. [${o.priority}] ${o.ap_name}*\n` +
+        `${i + 1}. [${o.priority}] ${o.ap_name}\n` +
         `Problema: ${o.issue}\n` +
         `Accion: ${o.action}\n` +
         `Usuarios afectados: ${o.estimated_users_affected}`

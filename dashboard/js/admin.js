@@ -127,16 +127,20 @@ function renderReports() {
         ? new Date(report.createdAt).toLocaleString('es-CO', { timeZone: 'America/Bogota' })
         : '';
 
+      const statusClass = report.status === 'assigned' ? 'report-badge--assigned' : 'report-badge--open';
+      const statusLabel = report.status === 'assigned' ? 'Asignado' : 'Abierto';
+
       return `
         <article class="report-item" data-report-id="${report.id}">
           <div class="report-item__header">
             <strong>${escapeHtml(report.reporter)}</strong>
+            <span class="report-badge ${statusClass}">${statusLabel}</span>
             <span class="report-item__meta">${escapeHtml(createdAt)}</span>
           </div>
           <p>${escapeHtml(report.description)}</p>
           <div class="report-item__meta">Ubicacion: ${report.lat}, ${report.lng}</div>
-          <div class="report-item__meta">Asignado: ${assigned ? escapeHtml(assigned.name) : 'Sin asignar'}</div>
-          <div class="report-item__meta">Sugerido: ${suggestionText}</div>
+          ${assigned ? `<div class="report-item__meta report-item__meta--assigned">Trabajador asignado: <strong>${escapeHtml(assigned.name)}</strong> &mdash; ${escapeHtml(assigned.role)}</div>` : ''}
+          <div class="report-item__meta">Sugerido por IA: ${suggestionText}</div>
           <div class="report-item__actions">
             <select data-report-select>
               <option value="">Seleccionar trabajador</option>
@@ -147,6 +151,7 @@ function renderReports() {
               suggestion ? suggestion.worker.id : ''
             }">Asignar sugerido</button>
           </div>
+          <div class="report-assign-status" data-assign-status></div>
         </article>
       `;
     })
@@ -266,6 +271,13 @@ async function assignReport(reportId, workerId) {
   });
 }
 
+function setAssignStatus(reportEl, text, isError = false) {
+  const el = reportEl.querySelector('[data-assign-status]');
+  if (!el) return;
+  el.textContent = text;
+  el.style.color = isError ? '#b1493b' : '#4caf8a';
+}
+
 function handleReportListClick(event) {
   const reportEl = event.target.closest('.report-item');
   if (!reportEl) return;
@@ -277,18 +289,32 @@ function handleReportListClick(event) {
 
   if (action === 'assign-report') {
     const workerId = select ? select.value : '';
-    if (!workerId) return;
+    if (!workerId) {
+      setAssignStatus(reportEl, 'Selecciona un trabajador primero.', true);
+      return;
+    }
+    setAssignStatus(reportEl, 'Asignando...');
     assignReport(reportId, workerId)
-      .then(loadReports)
-      .catch(() => {});
+      .then(() => {
+        if (window.refreshReportsMap) window.refreshReportsMap();
+        return loadReports();
+      })
+      .catch(() => setAssignStatus(reportEl, 'Error al asignar.', true));
   }
 
   if (action === 'assign-suggested') {
     const suggestedId = event.target.dataset.suggestedId;
-    if (!suggestedId) return;
+    if (!suggestedId) {
+      setAssignStatus(reportEl, 'No hay sugerencia disponible.', true);
+      return;
+    }
+    setAssignStatus(reportEl, 'Asignando sugerido...');
     assignReport(reportId, suggestedId)
-      .then(loadReports)
-      .catch(() => {});
+      .then(() => {
+        if (window.refreshReportsMap) window.refreshReportsMap();
+        return loadReports();
+      })
+      .catch(() => setAssignStatus(reportEl, 'Error al asignar.', true));
   }
 }
 

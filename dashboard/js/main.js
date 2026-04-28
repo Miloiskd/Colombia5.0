@@ -96,8 +96,9 @@ function renderWorkOrders(orders) {
   container.innerHTML = rows
     .map((order) => {
       const priorityClass = window.getPriorityClass(order.priority);
+      const orderClass = `work-order work-order--${String(order.priority).toLowerCase()}`;
       return `
-        <article class="work-order">
+        <article class="${orderClass}">
           <div class="work-order__header">
             <span class="${priorityClass}">${order.priority}</span>
             <strong>${order.ap_name}</strong>
@@ -206,16 +207,94 @@ async function handleGenerateReport() {
 }
 
 async function loadDashboard() {
+  startLoadBar();
   try {
     const stats = await fetchJSON('/api/stats');
     updateSummary(stats.summary);
+    updateNavStatus(stats.summary);
     renderRanking(stats.apEventRanking);
     renderWorkOrders(stats.workOrders);
     renderRecommendations(stats.strategicRecommendations);
     window.updateTrendChart(stats.hourlyTrend || []);
   } catch (err) {
     setText('networkStatus', 'Sin datos');
+  } finally {
+    finishLoadBar();
   }
+}
+
+// ── Barra de carga superior ──────────────────────────────────
+function startLoadBar() {
+  const bar = document.getElementById('loadBar');
+  if (!bar) return;
+  bar.classList.remove('is-done');
+  bar.style.width = '30%';
+  setTimeout(() => { bar.style.width = '70%'; }, 200);
+}
+
+function finishLoadBar() {
+  const bar = document.getElementById('loadBar');
+  if (!bar) return;
+  bar.style.width = '100%';
+  setTimeout(() => { bar.classList.add('is-done'); }, 300);
+}
+
+// ── Actualizar estado en nav ─────────────────────────────────
+function updateNavStatus(summary) {
+  const dot = document.getElementById('navStatusDot');
+  const text = document.getElementById('navStatusText');
+  if (!dot || !summary) return;
+
+  const offline = summary.offline_aps || 0;
+  const dormant = summary.dormant_aps || 0;
+
+  if (offline > 0) {
+    dot.className = 'topnav__brand-dot is-error';
+    if (text) text.textContent = `${offline} AP${offline > 1 ? 's' : ''} offline`;
+  } else if (dormant > 0) {
+    dot.className = 'topnav__brand-dot is-warn';
+    if (text) text.textContent = `${dormant} AP${dormant > 1 ? 's' : ''} dormant`;
+  } else {
+    dot.className = 'topnav__brand-dot is-ok';
+    if (text) text.textContent = 'Red estable';
+  }
+}
+
+// ── Highlight nav link según sección visible ─────────────────
+function initNavHighlight() {
+  const links = document.querySelectorAll('.topnav__link');
+  if (!links.length || !window.IntersectionObserver) return;
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          links.forEach((l) => {
+            const href = l.getAttribute('href');
+            l.classList.toggle('is-active', href === `#${id}`);
+          });
+        }
+      });
+    },
+    { rootMargin: `-${60}px 0px -60% 0px`, threshold: 0 }
+  );
+
+  document.querySelectorAll('section[id]').forEach((s) => observer.observe(s));
+}
+
+// ── Hamburger (mobile) ───────────────────────────────────────
+function initHamburger() {
+  const btn = document.getElementById('topnavHamburger');
+  const links = document.getElementById('topnavLinks');
+  if (!btn || !links) return;
+  btn.addEventListener('click', () => {
+    links.classList.toggle('is-open');
+  });
+  // Cerrar al hacer clic en un link
+  links.querySelectorAll('.topnav__link').forEach((l) => {
+    l.addEventListener('click', () => links.classList.remove('is-open'));
+  });
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -230,6 +309,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const reportButton = document.getElementById('generateReportBtn');
   if (reportButton) reportButton.addEventListener('click', handleGenerateReport);
 
+  initNavHighlight();
+  initHamburger();
+
   loadDashboard();
+  if (window.initMaintenance) window.initMaintenance();
   setInterval(loadDashboard, 60000);
 });

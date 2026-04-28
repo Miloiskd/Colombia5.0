@@ -32,16 +32,17 @@ function formatReportPopup(report) {
   const description = escapeHtml(report.description || 'Sin descripcion');
   const createdAt = report.createdAt ? new Date(report.createdAt) : null;
   const createdDate = createdAt
-    ? createdAt.toLocaleDateString('es-CO', { timeZone: 'America/Bogota' })
-    : '';
+    ? createdAt.toLocaleDateString('es-CO', { timeZone: 'America/Bogota', day: '2-digit', month: '2-digit', year: 'numeric' })
+    : 'Sin fecha';
   const createdTime = createdAt
     ? createdAt.toLocaleTimeString('es-CO', { timeZone: 'America/Bogota', hour: '2-digit', minute: '2-digit' })
     : '';
 
   return `
-    <strong>${reporter}</strong><br />
-    ${description}<br />
-    <small>Fecha: ${escapeHtml(createdDate)} | Hora: ${escapeHtml(createdTime)}</small>
+    <strong style="font-size:0.95em">${reporter}</strong><br />
+    <span style="font-size:0.88em;color:#444">${description}</span><br />
+    <hr style="margin:4px 0;border:none;border-top:1px solid #ddd" />
+    <span style="font-size:0.8em;color:#666">&#128197; ${escapeHtml(createdDate)}&nbsp;&nbsp;&#128336; ${escapeHtml(createdTime)}</span>
   `;
 }
 
@@ -76,6 +77,7 @@ async function submitReport(payload) {
 }
 
 async function loadReports() {
+  if (!reportsLayer) return;
   try {
     const reports = await fetchReports();
     reportsLayer.clearLayers();
@@ -131,9 +133,12 @@ function setupReportForm() {
       addReportMarker(report);
       reportsMap.setView([report.lat, report.lng], 15);
       form.reset();
-      setStatus('Reporte enviado.');
+      setStatus('Reporte enviado. Generando solucion con IA...');
 
       document.dispatchEvent(new CustomEvent('reports:updated', { detail: { report } }));
+
+      await mostrarSolucion(report.id);
+      setStatus('');
     } catch (err) {
       setStatus('No se pudo enviar el reporte.', true);
     }
@@ -163,9 +168,46 @@ function setupReportForm() {
   }
 }
 
+async function mostrarSolucion(reportId) {
+  const panel = document.getElementById('solucionPanel');
+  if (!panel) return;
+
+  try {
+    const res = await fetch(`/api/reports/${reportId}/solucion`, { method: 'POST' });
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    const s = data.solucion;
+
+    document.getElementById('solucionTipo').textContent = s.tipo_falla || '';
+    document.getElementById('solucionCausa').textContent = s.causa_probable || '';
+    document.getElementById('solucionTiempo').textContent = s.tiempo_estimado || '';
+    document.getElementById('solucionConsejo').textContent = s.consejo || '';
+
+    const urgEl = document.getElementById('solucionUrgencia');
+    urgEl.textContent = s.urgencia || '';
+    urgEl.className = `solucion-urgencia solucion-urgencia--${(s.urgencia || '').toLowerCase()}`;
+
+    const pasosEl = document.getElementById('solucionPasos');
+    pasosEl.innerHTML = (s.pasos || []).map((p) => `<li>${escapeHtml(p)}</li>`).join('');
+
+    const herrEl = document.getElementById('solucionHerramientas');
+    herrEl.innerHTML = (s.herramientas || []).map((h) => `<li>${escapeHtml(h)}</li>`).join('');
+
+    panel.hidden = false;
+    panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch {
+    // Si falla la IA, no bloqueamos al usuario
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   initMap();
   setupReportForm();
-  if (reportsMap) loadReports();
   window.refreshReportsMap = loadReports;
+
+  // Dar un tick para que el navegador calcule dimensiones reales antes de pintar el mapa
+  setTimeout(() => {
+    if (reportsMap) reportsMap.invalidateSize();
+    loadReports();
+  }, 100);
 });

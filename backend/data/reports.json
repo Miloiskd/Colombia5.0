@@ -1,24 +1,13 @@
 [
   {
-    "id": "576820f3-f2e6-4679-a861-90f621a2c588",
-    "reporter": "Sofia valencia",
-    "description": "Intermitencia en la red",
-    "lat": 3.405,
-    "lng": -76.535386,
-    "createdAt": "2026-04-28T17:55:36.289Z",
+    "id": "9ffcf257-76cc-4e54-8578-fe7a0cbd1614",
+    "reporter": "Fernando Palacios",
+    "description": "Red inestable hace 3 horas",
+    "lat": 3.457317,
+    "lng": -76.527361,
+    "createdAt": "2026-04-28T18:27:12.520Z",
     "status": "assigned",
-    "assignedWorkerId": "seed-2",
-    "assignedAt": "2026-04-28T17:55:57.455Z"
-  },
-  {
-    "id": "d8c7d785-65d7-4f43-bc38-39e8b858c665",
-    "reporter": "Delio Fernando",
-    "description": "Hace 3 horas no hay servicio de internet en la zona",
-    "lat": 3.415207,
-    "lng": -76.534879,
-    "createdAt": "2026-04-28T17:40:11.318Z",
-    "assignedWorkerId": "seed-2",
-    "status": "assigned",
-    "assignedAt": "2026-04-28T17:55:53.509Z"
+    "assignedWorkerId": "seed-1",
+    "assignedAt": "2026-04-28T18:27:34.262Z"
   }
 ]

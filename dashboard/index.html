@@ -29,6 +29,32 @@
   <body>
     <div class="background-grid" aria-hidden="true"></div>
 
+    <!-- Barra de progreso de carga -->
+    <div class="load-bar" id="loadBar"></div>
+
+    <!-- Navegación sticky -->
+    <nav class="topnav" id="topnav">
+      <div class="topnav__brand">
+        <span class="topnav__brand-dot" id="navStatusDot"></span>
+        <span class="topnav__brand-name">UrbaNet</span>
+        <span class="topnav__brand-city">Cali</span>
+      </div>
+      <div class="topnav__links" id="topnavLinks">
+        <a class="topnav__link" href="#section-kpis">Resumen</a>
+        <a class="topnav__link" href="#section-tendencias">Tendencias</a>
+        <a class="topnav__link" href="#section-ranking">Operacion</a>
+        <a class="topnav__link" href="#section-maintenance">Mantenimiento</a>
+        <a class="topnav__link" href="#section-map">Fallas</a>
+        <a class="topnav__link" href="#section-chat">Chat IA</a>
+      </div>
+      <div class="topnav__meta">
+        <span class="topnav__status-label" id="navStatusText">Cargando…</span>
+      </div>
+      <button class="topnav__hamburger" id="topnavHamburger" aria-label="Menú">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+
     <header class="hero">
       <div class="hero__content reveal">
         <span class="tag">Operacion de red</span>
@@ -76,44 +102,64 @@
     </header>
 
     <main>
-      <section class="kpi-grid" data-role="admin">
-        <article class="kpi-card reveal delay-1">
+      <section class="kpi-grid" id="section-kpis" data-role="admin">
+        <article class="kpi-card kpi-card--neutral reveal delay-1">
+          <div class="kpi-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1"/></svg>
+          </div>
           <span>Total APs</span>
           <strong id="kpiTotalAps">--</strong>
         </article>
-        <article class="kpi-card reveal delay-2">
+        <article class="kpi-card kpi-card--online reveal delay-2">
+          <div class="kpi-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
           <span>APs online</span>
           <strong id="kpiOnlineAps">--</strong>
         </article>
-        <article class="kpi-card reveal delay-3">
+        <article class="kpi-card kpi-card--offline reveal delay-3">
+          <div class="kpi-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </div>
           <span>APs offline</span>
           <strong id="kpiOfflineAps">--</strong>
         </article>
-        <article class="kpi-card reveal delay-4">
+        <article class="kpi-card kpi-card--dormant reveal delay-4">
+          <div class="kpi-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          </div>
           <span>APs dormant</span>
           <strong id="kpiDormantAps">--</strong>
         </article>
-        <article class="kpi-card reveal delay-5">
+        <article class="kpi-card kpi-card--clients reveal delay-5">
+          <div class="kpi-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
           <span>Clientes activos</span>
           <strong id="kpiTotalClients">--</strong>
         </article>
-        <article class="kpi-card reveal delay-6">
+        <article class="kpi-card kpi-card--usage reveal delay-6">
+          <div class="kpi-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
           <span>Consumo total (GB)</span>
           <strong id="kpiUsageGb">--</strong>
         </article>
       </section>
 
-      <section class="section section--chart reveal" data-role="admin">
+      <section class="section section--chart reveal" id="section-tendencias" data-role="admin">
         <div class="section__header">
-          <h2>Conexiones vs desconexiones</h2>
-          <p>Ultimas 24 horas por hora.</p>
+          <div class="section__header-text">
+            <h2>Conexiones vs. desconexiones</h2>
+            <p>Ultimas 24 horas por hora. Permite detectar patrones de inestabilidad.</p>
+          </div>
         </div>
         <div class="chart-card">
           <canvas id="trendChart" height="120"></canvas>
         </div>
       </section>
 
-      <section class="section grid-two reveal" data-role="admin">
+      <section class="section grid-two reveal" id="section-ranking" data-role="admin">
         <div class="panel-card">
           <div class="section__header">
             <h2>Ranking de APs por eventos</h2>
@@ -140,22 +186,22 @@
         </div>
       </section>
 
-      <section class="section reveal" data-role="admin">
+      <section class="section reveal" id="section-recomendaciones" data-role="admin">
         <div class="section__header">
           <h2>Recomendaciones estrategicas por zona</h2>
-          <p>Basadas en uso, inestabilidad y estado operativo.</p>
+          <p>Basadas en uso, inestabilidad y estado operativo. <em class="field-note">Los clientes indicados son recurrentes (histórico de last_seen por AP).</em></p>
         </div>
         <div id="recommendationsList" class="recommendations"></div>
       </section>
 
-      <section class="section reveal">
+      <section class="section reveal" id="section-map">
         <div class="section__header">
-          <h2>Reportar falla en campo</h2>
-          <p>Registro operativo con ubicacion, quien reporta y descripcion.</p>
+          <h2>Fallas reportadas en campo</h2>
+          <p>Mapa de fallas activas. Los usuarios pueden registrar nuevas incidencias.</p>
         </div>
         <div class="map-grid">
           <div id="reportsMap" class="map"></div>
-          <form id="reportForm" class="report-form">
+          <form id="reportForm" class="report-form" data-role="user">
             <label>
               Reportado por
               <input id="reporterInput" type="text" placeholder="Nombre completo" required />
@@ -180,6 +226,32 @@
             </div>
             <div id="reportStatus" class="chat-status"></div>
           </form>
+        </div>
+        <div id="solucionPanel" class="solucion-panel" hidden>
+          <div class="solucion-header">
+            <span class="solucion-ia-badge">IA</span>
+            <h3 id="solucionTipo" class="solucion-titulo"></h3>
+            <span id="solucionUrgencia" class="solucion-urgencia"></span>
+          </div>
+          <p id="solucionCausa" class="solucion-causa"></p>
+          <div class="solucion-body">
+            <div class="solucion-col">
+              <h4>Pasos a seguir</h4>
+              <ol id="solucionPasos" class="solucion-lista"></ol>
+            </div>
+            <div class="solucion-col">
+              <h4>Herramientas necesarias</h4>
+              <ul id="solucionHerramientas" class="solucion-lista solucion-lista--chips"></ul>
+              <div class="solucion-meta">
+                <span>Tiempo estimado:</span>
+                <strong id="solucionTiempo"></strong>
+              </div>
+              <div class="solucion-consejo">
+                <span>Consejo:</span>
+                <em id="solucionConsejo"></em>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -232,6 +304,77 @@
         </div>
       </section>
 
+      <!-- ===== SECCIÓN: MANTENIMIENTO ===== -->
+      <section class="section reveal" data-role="admin" id="section-maintenance">
+        <div class="section__header">
+          <h2>Plan de mantenimiento de APs</h2>
+          <p>Clasificación automática por tipo de mantenimiento basada en estabilidad, historial de caídas y métricas operativas.</p>
+        </div>
+
+        <!-- KPIs de mantenimiento -->
+        <div class="maintenance-kpis">
+          <div class="maint-kpi maint-kpi--correctivo">
+            <span class="maint-kpi__label">Correctivo</span>
+            <strong id="maintCorrectivo">--</strong>
+            <span class="maint-kpi__desc">Intervención inmediata</span>
+          </div>
+          <div class="maint-kpi maint-kpi--predictivo">
+            <span class="maint-kpi__label">Predictivo</span>
+            <strong id="maintPredictivo">--</strong>
+            <span class="maint-kpi__desc">Riesgo alto inminente</span>
+          </div>
+          <div class="maint-kpi maint-kpi--preventivo">
+            <span class="maint-kpi__label">Preventivo</span>
+            <strong id="maintPreventivo">--</strong>
+            <span class="maint-kpi__desc">Planificación recomendada</span>
+          </div>
+          <div class="maint-kpi maint-kpi--normal">
+            <span class="maint-kpi__label">Normal</span>
+            <strong id="maintNormal">--</strong>
+            <span class="maint-kpi__desc">Operación estable</span>
+          </div>
+        </div>
+
+        <!-- Gráficas -->
+        <div class="maintenance-charts">
+          <div class="panel-card maintenance-chart-card">
+            <h3>Distribución por tipo</h3>
+            <div class="maintenance-donut-wrap">
+              <canvas id="maintDonutChart"></canvas>
+            </div>
+          </div>
+          <div class="panel-card maintenance-chart-card">
+            <h3>Score de riesgo por AP</h3>
+            <div class="maintenance-bar-wrap">
+              <canvas id="maintBarChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabla detallada -->
+        <div class="panel-card" style="margin-top:1.5rem">
+          <h3 style="margin-bottom:1rem">Detalle por punto de acceso</h3>
+          <div class="maintenance-table-wrap">
+            <table class="table maintenance-table">
+              <thead>
+                <tr>
+                  <th>AP</th>
+                  <th>Estado</th>
+                  <th>Tipo</th>
+                  <th>Score</th>
+                  <th>Caídas AP</th>
+                  <th>Tasa desc.</th>
+                  <th>Errores/h</th>
+                  <th>Motivo</th>
+                </tr>
+              </thead>
+              <tbody id="maintenanceTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+      <!-- ===== FIN SECCIÓN MANTENIMIENTO ===== -->
+
       <section class="section report reveal" data-role="admin">
         <div class="section__header">
           <h2>Informe estrategico con IA</h2>
@@ -245,7 +388,7 @@ Selecciona "Generar informe" para obtener el reporte completo.
         </div>
       </section>
 
-      <section class="section chat reveal" data-role="admin">
+      <section class="section chat reveal" id="section-chat" data-role="admin">
         <div class="section__header">
           <h2>Chat operativo</h2>
           <p>Pregunta al agente sobre estado, fallas y recomendaciones.</p>
@@ -271,6 +414,7 @@ Selecciona "Generar informe" para obtener el reporte completo.
     <script src="js/alerts.js"></script>
     <script src="js/map.js"></script>
     <script src="js/admin.js"></script>
+    <script src="js/maintenance.js"></script>
     <script src="js/main.js"></script>
   </body>
 </html>
