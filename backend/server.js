@@ -5,6 +5,8 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { loadAllData } from './services/dataLoader.js';
 import dashboardRoutes from './routes/dashboard.js';
+import reportsRoutes from './routes/reports.js';
+import workersRoutes from './routes/workers.js';
 import { config } from './config.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -15,6 +17,8 @@ app.use(express.json({ limit: '1mb' }));
 
 app.use(express.static(path.join(__dirname, '../dashboard')));
 app.use('/api', dashboardRoutes);
+app.use('/api', reportsRoutes);
+app.use('/api', workersRoutes);
 
 const PORT = config.server.port;
 

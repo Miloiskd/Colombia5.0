@@ -1,0 +1,29 @@
+[
+  {
+    "id": "seed-1",
+    "name": "Laura Mejia",
+    "role": "Tecnica de campo",
+    "yearsExperience": 6,
+    "availability": "disponible",
+    "skills": ["energia", "cableado", "hardware"],
+    "createdAt": "2026-04-28T00:00:00.000Z"
+  },
+  {
+    "id": "seed-2",
+    "name": "Carlos Ruiz",
+    "role": "Especialista RF",
+    "yearsExperience": 8,
+    "availability": "disponible",
+    "skills": ["rf", "interferencia", "canal"],
+    "createdAt": "2026-04-28T00:00:00.000Z"
+  },
+  {
+    "id": "seed-3",
+    "name": "Diana Osorio",
+    "role": "Ingeniera de red",
+    "yearsExperience": 10,
+    "availability": "ocupado",
+    "skills": ["configuracion", "autenticacion", "seguridad"],
+    "createdAt": "2026-04-28T00:00:00.000Z"
+  }
+]

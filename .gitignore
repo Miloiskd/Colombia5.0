@@ -22,7 +22,13 @@ coverage/
 Thumbs.db
 
 # Local data (CSV)
-backend/data/*.csv
+# backend/data/*.csv
+
+# Local reports storage
+# backend/data/reports.json
+
+# Local workers storage
+# backend/data/workers.json
 
 # Local plan document
 PLAN_DESARROLLO_WIFI_INTELIGENTE.md

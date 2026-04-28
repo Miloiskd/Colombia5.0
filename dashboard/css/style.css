@@ -118,6 +118,46 @@ main {
   color: var(--teal-dark);
 }
 
+.role-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--card-stroke);
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.role-switch span {
+  font-size: 0.85rem;
+  color: var(--ink-muted);
+}
+
+.role-switch__btn {
+  border: 1px solid rgba(12, 31, 36, 0.2);
+  background: transparent;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  color: var(--ink);
+}
+
+.role-switch__btn.is-active {
+  background: var(--teal-dark);
+  color: #fff;
+  border-color: transparent;
+}
+
+body[data-role='user'] [data-role='admin'] {
+  display: none;
+}
+
+body[data-role='admin'] [data-role='user'] {
+  display: none;
+}
+
 .panel-card {
   background: var(--card);
   border: 1px solid var(--card-stroke);
@@ -356,6 +396,177 @@ main {
   gap: 16px;
 }
 
+.map-grid {
+  display: grid;
+  grid-template-columns: minmax(260px, 1.2fr) minmax(260px, 0.8fr);
+  gap: 20px;
+  align-items: stretch;
+}
+
+.map {
+  min-height: 360px;
+  border-radius: 18px;
+  border: 1px solid var(--card-stroke);
+  box-shadow: var(--shadow);
+}
+
+.report-form {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 18px;
+  border: 1px solid var(--card-stroke);
+  padding: 18px;
+  display: grid;
+  gap: 12px;
+}
+
+.report-form label {
+  display: grid;
+  gap: 6px;
+  font-size: 0.9rem;
+  color: var(--ink-muted);
+}
+
+.report-form input,
+.report-form textarea {
+  border: 1px solid rgba(12, 31, 36, 0.2);
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-family: 'Alegreya Sans', sans-serif;
+  font-size: 1rem;
+  color: var(--ink);
+  background: #fff;
+}
+
+.report-form input:focus,
+.report-form textarea:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(30, 111, 120, 0.15);
+  outline: none;
+}
+
+.report-coords {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.report-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.btn--ghost {
+  background: transparent;
+  border: 1px solid var(--teal-dark);
+  color: var(--teal-dark);
+}
+
+.reports-list {
+  display: grid;
+  gap: 16px;
+}
+
+.report-item {
+  background: rgba(255, 255, 255, 0.88);
+  border-radius: 16px;
+  border: 1px solid var(--card-stroke);
+  padding: 16px;
+  display: grid;
+  gap: 10px;
+}
+
+.report-item__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.report-item__meta {
+  font-size: 0.85rem;
+  color: var(--ink-muted);
+}
+
+.report-item__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.report-item select {
+  border: 1px solid rgba(12, 31, 36, 0.2);
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-family: 'Alegreya Sans', sans-serif;
+}
+
+.workers-grid {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.9fr) minmax(260px, 1.1fr);
+  gap: 20px;
+}
+
+.worker-form {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 18px;
+  border: 1px solid var(--card-stroke);
+  padding: 18px;
+  display: grid;
+  gap: 12px;
+}
+
+.worker-form label {
+  display: grid;
+  gap: 6px;
+  font-size: 0.9rem;
+  color: var(--ink-muted);
+}
+
+.worker-form input,
+.worker-form select {
+  border: 1px solid rgba(12, 31, 36, 0.2);
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-family: 'Alegreya Sans', sans-serif;
+  font-size: 1rem;
+  color: var(--ink);
+  background: #fff;
+}
+
+.worker-form input:focus,
+.worker-form select:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(30, 111, 120, 0.15);
+  outline: none;
+}
+
+.workers-list {
+  display: grid;
+  gap: 14px;
+}
+
+.worker-item {
+  background: rgba(255, 255, 255, 0.88);
+  border-radius: 16px;
+  border: 1px solid var(--card-stroke);
+  padding: 14px;
+  display: grid;
+  gap: 6px;
+}
+
+.worker-item__meta {
+  font-size: 0.85rem;
+  color: var(--ink-muted);
+}
+
+.worker-item__actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 .report-output {
   white-space: pre-wrap;
   background: rgba(12, 31, 36, 0.04);
@@ -537,6 +748,14 @@ main {
 
   .hero {
     gap: 24px;
+  }
+
+  .map-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .workers-grid {
+    grid-template-columns: 1fr;
   }
 
   .chat-form {
