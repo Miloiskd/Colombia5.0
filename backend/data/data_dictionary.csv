@@ -1,0 +1,33 @@
+file_name,field_name,data_type,description
+network_events_curated.csv,timestamp,datetime,"Fecha y hora del evento normalizada a 2026, zona UTC-5."
+network_events_curated.csv,ap_name,string,Nombre del punto de acceso (AP).
+network_events_curated.csv,ssid,string,Nombre de la red WiFi.
+network_events_curated.csv,client_id,string,Identificador anonimizado del cliente.
+network_events_curated.csv,client_description,string,Descripción original del cliente/dispositivo reportada por Meraki.
+network_events_curated.csv,event_category,string,"Categoría general del evento (802.11, 802.1X, Auth)."
+network_events_curated.csv,event_type,string,Tipo específico del evento de red.
+network_events_curated.csv,event_detail,string,Detalle técnico textual del evento.
+clients_curated.csv,client_id,string,Identificador anonimizado derivado de la MAC del cliente.
+clients_curated.csv,status,string,Estado del cliente al momento del reporte (online/offline).
+clients_curated.csv,client_description,string,Nombre o descripción del dispositivo reportado.
+clients_curated.csv,last_seen,datetime,Última vez que el cliente fue visto en la red.
+clients_curated.csv,usage_mb,float,Consumo total estimado en MB.
+clients_curated.csv,device_type,string,Tipo de dispositivo o sistema operativo reportado.
+clients_curated.csv,ap_name,string,Último AP al que estuvo conectado el cliente.
+clients_curated.csv,policy,string,Política aplicada al cliente.
+clients_curated.csv,onboarding,string,Estado/valor de onboarding cuando aplica.
+access_points_curated.csv,ap_name,string,Nombre del punto de acceso.
+access_points_curated.csv,mac,string,Dirección MAC del AP.
+access_points_curated.csv,serial,string,Número serial del equipo.
+access_points_curated.csv,status,string,Estado operativo del AP (online/offline/dormant).
+access_points_curated.csv,local_ip,string,Dirección IP local del AP.
+access_points_curated.csv,connectivity_history,string,Historial textual de cambios de conectividad exportado por Meraki.
+ap_hourly_metrics_curated.csv,timestamp_hour,datetime,Fecha y hora agrupada por hora.
+ap_hourly_metrics_curated.csv,ap_name,string,Nombre del AP.
+ap_hourly_metrics_curated.csv,total_events,integer,Número total de eventos en la hora.
+ap_hourly_metrics_curated.csv,total_connections,integer,Total de asociaciones en la hora.
+ap_hourly_metrics_curated.csv,total_disconnections,integer,Total de desasociaciones en la hora.
+ap_hourly_metrics_curated.csv,total_auth,integer,Total de autenticaciones en la hora.
+ap_hourly_metrics_curated.csv,unique_clients,integer,Clientes únicos observados en la hora.
+ap_hourly_metrics_curated.csv,disconnection_rate,float,Razón desconexiones/conexiones.
+ap_hourly_metrics_curated.csv,status,string,Estado actual del AP tomado del inventario.
