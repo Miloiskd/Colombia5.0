@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UrbaNet - Cali</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Alegreya+Sans:wght@300;400;500;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.8/dist/purify.min.js"></script>
+  </head>
+  <body>
+    <div class="background-grid" aria-hidden="true"></div>
+
+    <header class="hero">
+      <div class="hero__content reveal">
+        <span class="tag">Operacion de red</span>
+        <h1>UrbaNet</h1>
+        <p class="subtitle">
+          Monitoreo, soporte y analitica para UrbaNet, la red WiFi publica de Cali.
+        </p>
+        <div class="meta">
+          <div class="meta__item">
+            <span>Ultima actualizacion</span>
+            <strong id="lastUpdated">--</strong>
+          </div>
+          <div class="meta__item">
+            <span>Estado general</span>
+            <strong id="networkStatus">--</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero__panel reveal delay-2">
+        <div class="panel-card">
+          <h2>Resumen rapido</h2>
+          <p class="panel-note">Vista general de la red y de incidentes activos.</p>
+          <div class="panel-metrics">
+            <div>
+              <span>APs offline</span>
+              <strong id="offlineApsMini">--</strong>
+            </div>
+            <div>
+              <span>APs dormant</span>
+              <strong id="dormantApsMini">--</strong>
+            </div>
+            <div>
+              <span>Eventos 24h</span>
+              <strong id="totalEventsMini">--</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="kpi-grid">
+        <article class="kpi-card reveal delay-1">
+          <span>Total APs</span>
+          <strong id="kpiTotalAps">--</strong>
+        </article>
+        <article class="kpi-card reveal delay-2">
+          <span>APs online</span>
+          <strong id="kpiOnlineAps">--</strong>
+        </article>
+        <article class="kpi-card reveal delay-3">
+          <span>APs offline</span>
+          <strong id="kpiOfflineAps">--</strong>
+        </article>
+        <article class="kpi-card reveal delay-4">
+          <span>APs dormant</span>
+          <strong id="kpiDormantAps">--</strong>
+        </article>
+        <article class="kpi-card reveal delay-5">
+          <span>Clientes activos</span>
+          <strong id="kpiTotalClients">--</strong>
+        </article>
+        <article class="kpi-card reveal delay-6">
+          <span>Consumo total (GB)</span>
+          <strong id="kpiUsageGb">--</strong>
+        </article>
+      </section>
+
+      <section class="section section--chart reveal">
+        <div class="section__header">
+          <h2>Conexiones vs desconexiones</h2>
+          <p>Ultimas 24 horas por hora.</p>
+        </div>
+        <div class="chart-card">
+          <canvas id="trendChart" height="120"></canvas>
+        </div>
+      </section>
+
+      <section class="section grid-two reveal">
+        <div class="panel-card">
+          <div class="section__header">
+            <h2>Ranking de APs por eventos</h2>
+            <p>Indicador de inestabilidad o alta demanda.</p>
+          </div>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>AP</th>
+                <th>Eventos</th>
+              </tr>
+            </thead>
+            <tbody id="rankingBody"></tbody>
+          </table>
+        </div>
+
+        <div class="panel-card">
+          <div class="section__header">
+            <h2>Ordenes de trabajo</h2>
+            <p>Prioridad y accion recomendada.</p>
+          </div>
+          <div id="workOrdersList" class="work-orders"></div>
+        </div>
+      </section>
+
+      <section class="section reveal">
+        <div class="section__header">
+          <h2>Recomendaciones estrategicas por zona</h2>
+          <p>Basadas en uso, inestabilidad y estado operativo.</p>
+        </div>
+        <div id="recommendationsList" class="recommendations"></div>
+      </section>
+
+      <section class="section report reveal">
+        <div class="section__header">
+          <h2>Informe estrategico con IA</h2>
+          <p>Genera un reporte ejecutivo bajo demanda para la toma de decisiones.</p>
+        </div>
+        <div class="report-card">
+          <button id="generateReportBtn" class="btn">Generar informe</button>
+          <pre id="strategicReport" class="report-output">
+Selecciona "Generar informe" para obtener el reporte completo.
+          </pre>
+        </div>
+      </section>
+
+      <section class="section chat reveal">
+        <div class="section__header">
+          <h2>Chat operativo</h2>
+          <p>Pregunta al agente sobre estado, fallas y recomendaciones.</p>
+        </div>
+        <div class="chat-card">
+          <div id="chatLog" class="chat-log"></div>
+          <form id="chatForm" class="chat-form">
+            <input
+              id="chatInput"
+              type="text"
+              placeholder="Escribe tu pregunta"
+              autocomplete="off"
+              required
+            />
+            <button id="chatSend" class="btn" type="submit">Enviar</button>
+          </form>
+          <div id="chatStatus" class="chat-status"></div>
+        </div>
+      </section>
+    </main>
+
+    <script src="js/charts.js"></script>
+    <script src="js/alerts.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>

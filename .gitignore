@@ -1,0 +1,28 @@
+# Node
+node_modules/
+
+# Env files
+.env
+.env.*
+!.env.example
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build outputs
+/dist/
+/build/
+coverage/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local data (CSV)
+backend/data/*.csv
+
+# Local plan document
+PLAN_DESARROLLO_WIFI_INTELIGENTE.md

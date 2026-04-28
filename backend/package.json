@@ -1,0 +1,23 @@
+{
+  "name": "wifi-inteligente",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "node server.js",
+    "bot": "node bot.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.1",
+    "cors": "^2.8.5",
+    "csv-parse": "^5.5.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "node-cron": "^3.0.3",
+    "telegraf": "^4.16.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
